@@ -31,7 +31,7 @@ CHANGELOG.md
 Thumbs.db
 
 # Build artifacts (will be built in container)
-dist/
+# dist/ - COMMENTED OUT: We need dist folder for prebuilt deployment
 
 # Test data
 test-data/
