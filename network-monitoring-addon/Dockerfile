@@ -4,7 +4,7 @@ FROM $BUILD_FROM
 # Set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Install build dependencies and runtime dependencies
+# Install runtime dependencies only (no build tools needed)
 RUN apk add --no-cache \
     nodejs \
     npm \
@@ -18,19 +18,12 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY tsconfig.json ./
 
-# Copy source code
-COPY src/ ./src/
+# Install only production dependencies (no dev dependencies, no build needed)
+RUN npm ci --only=production
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci
-
-# Build the application
-RUN npm run build
-
-# Remove dev dependencies after build
-RUN npm prune --production
+# Copy pre-built dist folder
+COPY dist/ ./dist/
 
 # Copy run script and make executable
 COPY run.sh ./
@@ -50,7 +43,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 LABEL \
     io.hass.name="Network Monitoring Add-on" \
     io.hass.description="Comprehensive network monitoring with ping and DNS testing" \
-    io.hass.version="1.1.0" \
+    io.hass.version="1.0.0" \
     io.hass.type="addon" \
     io.hass.arch="armhf|armv7|aarch64|amd64|i386"
 
