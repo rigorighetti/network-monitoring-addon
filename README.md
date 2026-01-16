@@ -26,6 +26,17 @@ This add-on provides professional-grade network monitoring capabilities directly
 
 ## Installation
 
+### Quick Install from GitHub
+
+Add this repository URL to Home Assistant:
+```
+https://github.com/rigorighetti/network-monitoring-addon
+```
+
+**Detailed instructions:** See [INSTALL_FROM_GITHUB.md](INSTALL_FROM_GITHUB.md)
+
+### Manual Installation
+
 1. Add this repository to your Home Assistant add-on store
 2. Click "Install" on the "Network Monitoring Add-on"
 3. Configure your monitoring targets in the add-on configuration tab
