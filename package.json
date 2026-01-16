@@ -1,0 +1,55 @@
+{
+  "name": "network-monitoring-addon",
+  "version": "1.1.0",
+  "description": "Home Assistant add-on for network monitoring with ping and DNS testing",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && npm run copy-static",
+    "copy-static": "mkdir -p dist/dashboard/static && cp -r src/dashboard/static/* dist/dashboard/static/",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+  },
+  "keywords": [
+    "homeassistant",
+    "addon",
+    "network",
+    "monitoring",
+    "ping",
+    "dns"
+  ],
+  "author": "Home Assistant Community",
+  "license": "MIT",
+  "dependencies": {
+    "@types/ping": "^0.4.4",
+    "axios": "^1.6.2",
+    "dns2": "^2.1.0",
+    "express": "^4.18.2",
+    "node-cron": "^3.0.3",
+    "ping": "^1.0.0",
+    "sqlite3": "^5.1.6",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@types/dns2": "^2.0.10",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.10.4",
+    "@types/node-cron": "^3.0.11",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^8.54.0",
+    "fast-check": "^3.15.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

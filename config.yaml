@@ -1,0 +1,73 @@
+name: Network Monitoring Add-on
+version: "1.1.0"
+slug: network_monitoring_addon
+description: Comprehensive network monitoring with ping and DNS testing for Home Assistant
+url: https://github.com/homeassistant/addons
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+startup: services
+boot: auto
+init: false
+map:
+  - config:rw
+  - ssl
+options:
+  ping_targets:
+    - name: "Google DNS"
+      address: "8.8.8.8"
+      interval: 60
+      enabled: true
+    - name: "Cloudflare DNS"
+      address: "1.1.1.1"
+      interval: 60
+      enabled: true
+  dns_targets:
+    - name: "Local DNS"
+      server_ip: "192.168.1.217"
+      test_domains:
+        - "google.com"
+        - "github.com"
+      interval: 120
+      enabled: true
+  alert_thresholds:
+    ping_timeout_ms: 5000
+    ping_loss_percent: 10.0
+    dns_timeout_ms: 3000
+    consecutive_failures: 3
+  data_retention_days: 30
+  log_level: info
+schema:
+  ping_targets:
+    - name: str
+      address: str
+      interval: int(1,600)
+      enabled: bool
+  dns_targets:
+    - name: str
+      server_ip: str
+      test_domains:
+        - str
+      interval: int(1,600)
+      enabled: bool
+  alert_thresholds:
+    ping_timeout_ms: int(1000,30000)
+    ping_loss_percent: float(0.0,100.0)
+    dns_timeout_ms: int(1000,30000)
+    consecutive_failures: int(1,10)
+  data_retention_days: int(1,365)
+  log_level: list(debug|info|warning|error)?
+ingress: true
+ingress_port: 8088
+panel_icon: mdi:network
+panel_title: Network Monitor
+panel_admin: false
+hassio_api: true
+hassio_role: default
+homeassistant_api: true
+host_network: true
+privileged:
+  - NET_RAW
