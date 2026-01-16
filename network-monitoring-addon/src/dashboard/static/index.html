@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Monitoring Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>Network Monitoring Dashboard</h1>
+                <div class="header-controls">
+                    <div class="time-range-selector">
+                        <label for="timeRange">Time Range:</label>
+                        <select id="timeRange">
+                            <option value="1h">Last Hour</option>
+                            <option value="6h">Last 6 Hours</option>
+                            <option value="24h" selected>Last 24 Hours</option>
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d">Last 30 Days</option>
+                        </select>
+                    </div>
+                    <div class="interval-selector">
+                        <label for="dataInterval">Data Interval:</label>
+                        <select id="dataInterval">
+                            <option value="1">1 Minute</option>
+                            <option value="5">5 Minutes</option>
+                            <option value="15" selected>15 Minutes</option>
+                            <option value="60">1 Hour</option>
+                        </select>
+                    </div>
+                    <div class="refresh-controls">
+                        <label>
+                            <input type="checkbox" id="autoRefresh" checked>
+                            Auto Refresh
+                        </label>
+                        <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+                    </div>
+                    <div class="status-indicator">
+                        <span id="connectionStatus" class="status-connected">Connected</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- System Status Overview -->
+        <section class="system-overview">
+            <div class="overview-cards">
+                <div class="card">
+                    <h3>System Status</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="label">Uptime:</span>
+                            <span id="systemUptime" class="value">--</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Total Targets:</span>
+                            <span id="totalTargets" class="value">--</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Healthy:</span>
+                            <span id="healthyTargets" class="value status-online">--</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Failed:</span>
+                            <span id="failedTargets" class="value status-offline">--</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Memory Usage</h3>
+                    <div class="metric-display">
+                        <span id="memoryUsage" class="metric-value">-- MB</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Last Updated</h3>
+                    <div class="metric-display">
+                        <span id="lastUpdated" class="metric-value">--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="ping">Ping Monitoring</button>
+            <button class="tab-button" data-tab="dns">DNS Monitoring</button>
+            <button class="tab-button" data-tab="config">Configuration</button>
+        </nav>
+
+        <!-- Ping Monitoring Tab -->
+        <section id="ping-tab" class="tab-content active">
+            <div class="targets-header">
+                <h2>Ping Targets</h2>
+                <div class="targets-controls">
+                    <label>
+                        <input type="checkbox" id="showMinMax" checked>
+                        Show Min/Max
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showPacketLoss" checked>
+                        Show Packet Loss
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showEvents" checked>
+                        Highlight Events
+                    </label>
+                </div>
+            </div>
+            <div id="pingTargets" class="targets-container">
+                <!-- Ping target charts will be dynamically generated here -->
+            </div>
+        </section>
+
+        <!-- DNS Monitoring Tab -->
+        <section id="dns-tab" class="tab-content">
+            <div class="targets-header">
+                <h2>DNS Servers</h2>
+                <div class="targets-controls">
+                    <label>
+                        <input type="checkbox" id="dnsShowMinMax" checked>
+                        Show Min/Max
+                    </label>
+                    <label>
+                        <input type="checkbox" id="dnsShowEvents" checked>
+                        Highlight Events
+                    </label>
+                </div>
+            </div>
+            <div id="dnsTargets" class="targets-container">
+                <!-- DNS target charts will be dynamically generated here -->
+            </div>
+        </section>
+
+        <!-- Configuration Tab -->
+        <section id="config-tab" class="tab-content">
+            <div class="config-container">
+                <div class="config-header">
+                    <h2>Configuration</h2>
+                    <div class="config-actions">
+                        <button id="validateConfig" class="btn btn-secondary">Validate</button>
+                        <button id="resetConfig" class="btn btn-warning">Reset to Defaults</button>
+                        <button id="saveConfig" class="btn btn-primary">Save Configuration</button>
+                    </div>
+                </div>
+
+                <!-- Ping Targets Configuration -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <h3>Ping Targets</h3>
+                        <button id="addPingTarget" class="btn btn-secondary btn-sm">Add Ping Target</button>
+                    </div>
+                    <div id="pingTargetsContainer" class="targets-container">
+                        <!-- Ping targets will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <!-- DNS Targets Configuration -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <h3>DNS Targets</h3>
+                        <button id="addDnsTarget" class="btn btn-secondary btn-sm">Add DNS Target</button>
+                    </div>
+                    <div id="dnsTargetsContainer" class="targets-container">
+                        <!-- DNS targets will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <!-- Alert Thresholds Configuration -->
+                <div class="config-section">
+                    <h3>Alert Thresholds</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pingTimeoutMs">Ping Timeout (ms):</label>
+                            <input type="number" id="pingTimeoutMs" class="config-input" 
+                                   min="100" max="30000" value="5000" required>
+                            <div class="field-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pingLossPercent">Ping Loss Threshold (%):</label>
+                            <input type="number" id="pingLossPercent" class="config-input" 
+                                   min="0" max="100" step="0.1" value="10.0" required>
+                            <div class="field-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dnsTimeoutMs">DNS Timeout (ms):</label>
+                            <input type="number" id="dnsTimeoutMs" class="config-input" 
+                                   min="100" max="30000" value="3000" required>
+                            <div class="field-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="consecutiveFailures">Consecutive Failures:</label>
+                            <input type="number" id="consecutiveFailures" class="config-input" 
+                                   min="1" max="100" value="3" required>
+                            <div class="field-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Retention Configuration -->
+                <div class="config-section">
+                    <h3>Data Retention</h3>
+                    <div class="form-group">
+                        <label for="dataRetentionDays">Retention Period (days):</label>
+                        <input type="number" id="dataRetentionDays" class="config-input" 
+                               min="1" max="365" value="30" required>
+                        <div class="field-error"></div>
+                        <small class="field-help">Data older than this will be automatically deleted</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <p>Loading dashboard data...</p>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="errorModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Error</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">An error occurred</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="closeErrorModal()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Template -->
+    <template id="chartTemplate">
+        <div class="target-chart">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <h3 class="target-name"></h3>
+                    <span class="target-address"></span>
+                </div>
+                <div class="chart-status">
+                    <span class="status-badge"></span>
+                    <div class="chart-metrics">
+                        <span class="metric">
+                            <label>Current:</label>
+                            <span class="current-value">--</span>
+                        </span>
+                        <span class="metric">
+                            <label>Uptime:</label>
+                            <span class="uptime-value">--</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas class="chart-canvas"></canvas>
+            </div>
+        </div>
+    </template>
+
+    <script src="dashboard.js"></script>
+    <script src="config.js"></script>
+</body>
+</html>
